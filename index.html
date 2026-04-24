@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AI+中医药辅助戒烟 · 戒断期辨证调理系统</title>
+    <style>
+        :root {
+            --bg: #FFF8EC;
+            --card: #FFFDF7;
+            --border: #D4A96A;
+            --accent: #8B4513;
+            --accent2: #C0392B;
+            --text: #3E2723;
+            --sub: #6D4C41;
+            --gold: #B8860B;
+            --tag-bg: #F5E6D3;
+            --tag-sel: #8B4513;
+            --shadow: 0 4px 12px rgba(139,69,19,0.08);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "PingFang SC", "Noto Serif SC", "Source Han Serif SC", "SimSun", "STSong", serif;
+            background: var(--bg);
+            color: var(--text);
+            background-image:
+                radial-gradient(ellipse at 20% 0%, rgba(218,165,105,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 100%, rgba(180,130,80,0.08) 0%, transparent 60%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 16px 18px 40px;
+        }
+
+        /* ========== Header ========== */
+        .header {
+            text-align: center;
+            padding: 24px 12px 8px;
+            position: relative;
+        }
+        .header .seal {
+            display: inline-block;
+            border: 2.5px solid var(--accent2);
+            color: var(--accent2);
+            padding: 6px 18px;
+            font-size: 14px;
+            letter-spacing: 3px;
+            transform: rotate(-3deg);
+            font-weight: bold;
+            margin-bottom: 14px;
+            opacity: 0.85;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin: 6px 0;
+        }
+        .header h1 .icon { font-size: 28px; margin: 0 4px; }
+        .header .sub {
+            font-size: 13px;
+            color: var(--sub);
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+        .header .divider {
+            width: 50px;
+            height: 2px;
+            background: var(--gold);
+            margin: 12px auto 0;
+            border-radius: 1px;
+        }
+
+        /* ========== Card ========== */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 16px;
+            margin: 14px 0;
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px dotted var(--border);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent2);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ========== Tag Input ========== */
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .tag {
+            padding: 9px 15px;
+            border-radius: 24px;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            background: var(--tag-bg);
+            color: var(--text);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.25s;
+            letter-spacing: 0.5px;
+        }
+        .tag:active { transform: scale(0.95); }
+        .tag.selected {
+            background: var(--tag-sel);
+            color: #FFFDF7;
+            border-color: var(--tag-sel);
+            box-shadow: 0 2px 8px rgba(139,69,19,0.25);
+        }
+        .tag.hint {
+            background: #FFF8EC;
+            border-style: dashed;
+            font-size: 13px;
+            color: #8B7355;
+            cursor: default;
+        }
+
+        /* ========== Text Input ========== */
+        .text-input-area {
+            margin-top: 10px;
+        }
+        .text-input-area textarea {
+            width: 100%;
+            height: 72px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            background: var(--card);
+            color: var(--text);
+            letter-spacing: 0.5px;
+            line-height: 1.6;
+        }
+        .text-input-area textarea::placeholder {
+            color: #BBA58A;
+        }
+
+        /* ========== Buttons ========== */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 11px 22px;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #FFFDF7;
+            flex: 1;
+            min-width: 120px;
+        }
+        .btn-primary:hover { background: #6B3410; }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--accent);
+            color: var(--accent);
+        }
+        .btn-outline:hover { background: rgba(139,69,19,0.05); }
+
+        /* ========== Result ========== */
+        .result-area { margin-top: 8px; }
+
+        .syndrome-card {
+            border-left: 4px solid var(--accent);
+            background: #FFFDF7;
+            border-radius: 0 10px 10px 0;
+            padding: 14px 16px;
+            margin: 14px 0;
+            box-shadow: var(--shadow);
+            animation: fadeSlide 0.4s ease;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .syndrome-card .syn-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent2);
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        .syndrome-card .syn-match {
+            font-size: 12px;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+        .syndrome-card .section {
+            margin: 8px 0;
+        }
+        .syndrome-card .section-label {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 14px;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .syndrome-card .section-content {
+            font-size: 14px;
+            color: var(--text);
+            padding-left: 8px;
+            border-left: 2px solid #E8D5B7;
+            margin-left: 4px;
+        }
+        .syndrome-card .formula {
+            background: #FDF5E6;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 3px 0;
+            font-size: 13.5px;
+        }
+        .no-result {
+            text-align: center;
+            padding: 30px;
+            color: #BBA58A;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: #BBA58A;
+            padding: 20px 0 10px;
+            letter-spacing: 0.5px;
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+
+        /* ========== Smooth ========== */
+        html { scroll-behavior: smooth; }
+
+        @media (max-width: 480px) {
+            .header h1 { font-size: 21px; }
+            .tag { padding: 8px 12px; font-size: 13px; }
+            .btn { padding: 10px 16px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ==================== HEADER ==================== -->
+    <div class="header">
+        <div class="seal">戒 断 调 理</div>
+        <h1><span class="icon">🌿</span>AI+中医药辅助戒烟<span class="icon">🌿</span></h1>
+        <p class="sub">戒断期多症状 · 证型 · 辨证调理体系</p>
+        <div class="divider"></div>
+    </div>
+
+    <!-- ==================== 输入区 ==================== -->
+    <div class="card" id="inputCard">
+        <div class="card-title"><span class="dot"></span>请选择或输入您的戒断症状</div>
+
+        <!-- 标签选择 -->
+        <div class="tag-group" id="tagGroup"></div>
+
+        <!-- 文字输入 -->
+        <div class="text-input-area">
+            <textarea id="textInput" placeholder="或在此自由输入症状，如：最近总是失眠、烦躁想抽烟、喉咙干痒……"></textarea>
+        </div>
+
+        <!-- 按钮 -->
+        <div class="btn-row">
+            <button class="btn btn-primary" onclick="analyze()">🔍 开始辨证分析</button>
+            <button class="btn btn-outline" onclick="resetAll()">↺ 重新选择</button>
+        </div>
+    </div>
+
+    <!-- ==================== 结果区 ==================== -->
+    <div id="resultArea" class="result-area"></div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <div class="footer">
+        <p>依据《中药学》《中医内科学》 · 药食同源目录 · 控烟中医药共识</p>
+        <p>本系统仅供参考，具体情况请咨询执业中医师</p>
+    </div>
+
+</div>
+
+<script>
+// ======================== 核心数据 ========================
+const SYNDROME_DB = [
+    {
+        id: 'liver',
+        name: '肝郁气滞 / 肝郁化火',
+        keywords: ['烦躁','易怒','焦虑','情绪不稳','胸胁胀满','胁痛','想发脾气','强迫','烟瘾','冲动','口苦','头胀','急躁','郁闷'],
+        matchCount: 0,
+        priority: 1,
+        content: {
+            mechanism: '烟草性辛温燥烈，长期吸入灼伤肺络，肺金受制，金不制木，肝气疏泄失常。尼古丁长期外源性刺激中枢，戒断后神经调节失衡，肝失条达、气机郁结，郁久化火。肝火扰神、气机壅滞，进而出现情绪躁扰、烦躁易怒、持续性烟瘾渴求、胸胁胀满。',
+            teas: [
+                { name: '疏肝解郁方', detail: '玫瑰花3g、佛手3g、陈皮2g，沸水焖泡。玫瑰花疏肝和血，佛手疏肝理气、宽中解郁，陈皮理气化湿。' },
+                { name: '清肝泻火方', detail: '薄荷2g、菊花3g、淡竹叶2g。轻清宣透，清解肝郁内热，改善急躁易怒、头目胀闷。' }
+            ],
+            acupoints: '太冲、合谷、期门，每穴按揉1–2分钟，每日2–3次，疏肝泻火、调畅气机。',
+            daoyin: '八段锦「两手托天理三焦」+ 腹式呼吸，疏利三焦气机，平复情绪冲动，降低复吸欲望。'
+        }
+    },
+    {
+        id: 'heart',
+        name: '心火亢盛 / 心肾不交 / 心神失养',
+        keywords: ['失眠','入睡困难','多梦','易醒','早醒','心悸','心慌','怔忡','心烦','精神恍惚','盗汗','手心热','睡不着','梦多'],
+        matchCount: 0,
+        priority: 2,
+        content: {
+            mechanism: '烟毒燥热耗伤阴液，日久耗损肾阴。肾水亏虚不能上济心火，水火失济；燥热之邪内扰心神，心神无所潜藏。戒断期阴阳节律紊乱，加重心神不宁，表现为入睡困难、多梦易醒、夜间心悸、精神恍惚。',
+            teas: [
+                { name: '交通心肾方', detail: '酸枣仁10g（捣碎）、百合10g、莲子心1g，睡前温服。酸枣仁养血安神，百合养阴清心，莲子心清心降火。' },
+                { name: '养阴宁心方', detail: '桂圆肉3g、麦冬5g，小火慢泡，益气养阴、敛心安神，改善虚烦不寐。' }
+            ],
+            acupoints: '睡前按揉神门、涌泉、内关，宁心定悸、引火归元，促进心肾相交。',
+            daoyin: '睡前温水足浴，收敛浮阳，配合静息调息，减少心神躁动。'
+        }
+    },
+    {
+        id: 'spleen',
+        name: '肺脾气虚 / 气虚湿阻',
+        keywords: ['乏力','疲惫','少气','懒言','不想说话','语声低微','四肢困重','身体沉重','食欲差','饭后腹胀','大便溏','没力气','困重','虚弱'],
+        matchCount: 0,
+        priority: 3,
+        content: {
+            mechanism: '烟毒久蕴，直接损伤肺气，肺主一身之气，肺气亏虚则宗气不足。肺虚及脾，子病及母，脾失健运，气血生化乏源；脾虚水湿不化，湿邪困脾，周身气机濡滞。戒断后元气失于后天濡养，气虚症状显著加重。',
+            teas: [
+                { name: '润肺益气方', detail: '黄芪5g、麦冬5g、玉竹3g，日常频服。黄芪补益脾肺之气，麦冬、玉竹养阴润肺。' },
+                { name: '化湿醒脾方', detail: '茯苓5g、炒麦芽3g、大枣2枚，健脾祛湿，缓解四肢困重、食欲不振。' }
+            ],
+            acupoints: '长按足三里、肺俞、脾俞，补中益气、固护肺气。',
+            daoyin: '适度慢走、拉伸，助脾气升清、肺气宣降，改善周身疲乏。'
+        }
+    },
+    {
+        id: 'lungYin',
+        name: '肺阴亏虚 / 燥邪伤肺',
+        keywords: ['咽喉干','咽痒','干咳','少痰','声音嘶哑','口鼻干燥','口干','清嗓子','喉咙异物','咽部不适','燥热','声音沙哑'],
+        matchCount: 0,
+        priority: 4,
+        content: {
+            mechanism: '烟草燥热之性最易灼伤肺阴，肺为娇脏，喜润恶燥。长期烟熏，肺津耗损，咽喉为肺之门户，津液不能上承濡润。戒断期燥热余邪未清，肺失清肃，故而咽干咽痒、刺激性干咳、声嘶、口鼻燥热。',
+            teas: [
+                { name: '清燥润肺方', detail: '百合10g、玉竹5g、桔梗3g，宣肺利咽、生津润燥。' },
+                { name: '生津缓咳方', detail: '雪梨切块、百合、川贝母（药食同源限量）慢炖，缓解燥咳、咽喉异物感。' }
+            ],
+            acupoints: '按揉鱼际、列缺，清泻肺热、养阴利咽。',
+            daoyin: '日常增加温水摄入，忌辛辣燥热饮食，养护肺阴。'
+        }
+    },
+    {
+        id: 'lungQi',
+        name: '肺气郁闭 / 痰浊内阻 / 三焦气机失调',
+        keywords: ['胸闷','憋胀','呼吸不畅','善太息','叹气','嗳气','打嗝','胃脘痞塞','周身不畅','堵着','闷胀','憋气','透气困难'],
+        matchCount: 0,
+        priority: 5,
+        content: {
+            mechanism: '肺主宣发肃降，长期吸烟致肺气壅遏、宣降失司，水湿代谢失常，聚湿生痰。痰浊阻滞胸膈，气机升降出入受阻；戒断后无尼古丁强行振奋气机，郁滞之象外露，出现胸闷、善太息、脘腹胀满、周身不畅。',
+            teas: [
+                { name: '宽胸化浊方', detail: '陈皮3g、茯苓5g、桔梗3g、紫苏梗2g。理气健脾、化痰通窍，疏通胸膈气机。' }
+            ],
+            acupoints: '点按膻中、中府、丰隆，宽胸理气、燥湿化痰，改善胸闷憋气。',
+            daoyin: '练习缓慢扩胸运动、太极柔和功法，恢复肺之宣降功能。'
+        }
+    },
+    {
+        id: 'phlegm',
+        name: '痰热上扰 / 清阳不升',
+        keywords: ['头晕','头胀','头昏','注意力不集中','涣散','记忆力下降','思维迟钝','头重如裹','头脑不清','昏沉','健忘','专注力差'],
+        matchCount: 0,
+        priority: 6,
+        content: {
+            mechanism: '烟毒痰热蒙蔽清窍，加之气虚清阳无法上荣头目。戒断期间气血阴阳波动，脑窍失养、浊邪上扰，表现为头目昏沉、思维迟钝、专注力下降、头昏胀痛。',
+            teas: [
+                { name: '清利头目饮', detail: '葛根5g、菊花3g、荷叶2g，升发清阳、清利头目，缓解头晕沉胀闷。' }
+            ],
+            acupoints: '按揉百会、风池，升阳开窍、疏利头窍。',
+            daoyin: '规律作息、减少熬夜，固护正气，助清阳上升。'
+        }
+    },
+    {
+        id: 'stomach',
+        name: '肝胃不和 / 脾虚气滞',
+        keywords: ['食欲紊乱','不想吃饭','恶心','反胃','想吐','腹胀','便秘','便溏','大便不调','消化差','胃不舒服','没胃口'],
+        matchCount: 0,
+        priority: 7,
+        content: {
+            mechanism: '肝郁日久横逆犯胃，加之烟毒耗伤脾胃运化功能。戒断期情志失调加重肝气犯胃，中焦气机阻滞，脾胃纳运失常，出现食欲减退、恶心反胃、腹胀、便秘或便溏。',
+            teas: [
+                { name: '和胃理气饮', detail: '香附2g、陈皮3g、炒山楂2g，疏肝和胃、理气消胀，调和中焦运化。' }
+            ],
+            acupoints: '按揉中脘、内关、太冲，调和肝脾、和胃降逆。',
+            daoyin: '餐后慢行，顺时针摩腹，助中焦气机运转。'
+        }
+    }
+];
+
+// ======================== 初始化标签 ========================
+const allTags = [];
+SYNDROME_DB.forEach(syn => {
+    syn.keywords.forEach(kw => {
+        if (!allTags.includes(kw)) allTags.push(kw);
+    });
+});
+
+const tagGroup = document.getElementById('tagGroup');
+allTags.forEach(tag => {
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.textContent = tag;
+    span.onclick = function() { this.classList.toggle('selected'); };
+    tagGroup.appendChild(span);
+});
+
+// ======================== 文本分词匹配 ========================
+function tokenize(text) {
+    const tokens = [];
+    // 常见症状词组优先匹配
+    const phrases = [
+        '入睡困难','注意力不集中','记忆力下降','不想说话','四肢困重','身体沉重',
+        '声音嘶哑','口鼻干燥','咽喉异物','喉咙异物','呼吸不畅','饭后腹胀',
+        '大便不调','不想吃饭','头脑不清','头重如裹','思维迟钝','专注力差',
+        '精神恍惚','语声低微','胸胁胀满','胃脘痞塞','周身不畅','清嗓子',
+        '烦躁','易怒','焦虑','失眠','多梦','易醒','早醒','心悸','心慌',
+        '怔忡','心烦','盗汗','乏力','疲惫','少气','懒言','咽干','咽痒',
+        '干咳','少痰','口干','胸闷','憋胀','嗳气','打嗝','头晕','头胀',
+        '头昏','恶心','反胃','腹胀','便秘','便溏','口苦','胁痛','叹气',
+        '闷胀','憋气','健忘','昏沉','困重','虚弱','燥热'
+    ];
+    const lower = text.toLowerCase();
+    phrases.forEach(p => {
+        if (lower.includes(p)) tokens.push(p);
+    });
+    return tokens;
+}
+
+// ======================== 分析函数 ========================
+function analyze() {
+    // 收集标签选择
+    const selectedTags = [];
+    document.querySelectorAll('#tagGroup .tag.selected').forEach(t => {
+        selectedTags.push(t.textContent.trim());
+    });
+
+    // 收集文本输入
+    const textVal = document.getElementById('textInput').value.trim();
+    const textTokens = tokenize(textVal);
+
+    // 合并所有命中词
+    const allHits = [...new Set([...selectedTags, ...textTokens])];
+
+    // 重置匹配计数
+    SYNDROME_DB.forEach(s => s.matchCount = 0);
+
+    // 匹配
+    allHits.forEach(hit => {
+        SYNDROME_DB.forEach(syn => {
+            syn.keywords.forEach(kw => {
+                if (kw === hit || kw.includes(hit) || hit.includes(kw)) {
+                    syn.matchCount++;
+                }
+            });
+        });
+    });
+
+    // 筛选命中数>0的，按匹配度降序
+    const matched = SYNDROME_DB.filter(s => s.matchCount > 0)
+        .sort((a, b) => b.matchCount - a.matchCount);
+
+    const resultArea = document.getElementById('resultArea');
+
+    if (matched.length === 0) {
+        resultArea.innerHTML = '<div class="no-result">🔍 未匹配到对应证型<br><small>请补充更多症状或尝试文字输入</small></div>';
+        return;
+    }
+
+    // 渲染结果
+    let html = '';
+    matched.forEach((syn, idx) => {
+        const totalKw = syn.keywords.length;
+        const pct = Math.round((syn.matchCount / (allHits.length || 1)) * 100);
+        html += `
+        <div class="syndrome-card" style="animation-delay:${idx * 0.1}s">
+            <div class="syn-name">【${idx + 1}】${syn.name}</div>
+            <div class="syn-match">匹配度：命中 ${syn.matchCount} 项关联症状 | 建议优先关注</div>
+
+            <div class="section">
+                <div class="section-label">📖 权威病机</div>
+                <div class="section-content">${syn.content.mechanism}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-label">🍵 药食同源代茶饮</div>
+                <div class="section-content">
+                    ${syn.content.teas.map(t => `<div class="formula"><strong>${t.name}：</strong>${t.detail}</div>`).join('')}
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-label">📍 穴位按压</div>
+                <div class="section-content">${syn.content.acupoints}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-label">🧘 导引调摄</div>
+                <div class="section-content">${syn.content.daoyin}</div>
+            </div>
+        </div>`;
+    });
+
+    resultArea.innerHTML = html;
+    resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ======================== 重置 ========================
+function resetAll() {
+    document.querySelectorAll('#tagGroup .tag.selected').forEach(t => t.classList.remove('selected'));
+    document.getElementById('textInput').value = '';
+    document.getElementById('resultArea').innerHTML = '';
+    document.getElementById('inputCard').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
