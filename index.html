@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AI+中医药辅助戒烟 · 戒断期辨证调理系统</title>
+    <title>中医戒烟助手 · 戒断期辨证调理系统</title>
     <style>
         :root {
             --bg: #FFF8EC;
@@ -436,20 +436,37 @@ const SYNDROME_DB = [
 ];
 
 // ======================== 初始化标签 ========================
-const allTags = [];
-SYNDROME_DB.forEach(syn => {
-    syn.keywords.forEach(kw => {
-        if (!allTags.includes(kw)) allTags.push(kw);
-    });
-});
-
 const tagGroup = document.getElementById('tagGroup');
-allTags.forEach(tag => {
-    const span = document.createElement('span');
-    span.className = 'tag';
-    span.textContent = tag;
-    span.onclick = function() { this.classList.toggle('selected'); };
-    tagGroup.appendChild(span);
+
+const groupLabels = [
+    { id: 'liver', label: '【情绪·肝】' },
+    { id: 'heart', label: '【睡眠·心】' },
+    { id: 'spleen', label: '【疲乏·脾肺】' },
+    { id: 'lungYin', label: '【咽喉·肺阴】' },
+    { id: 'lungQi', label: '【胸闷·气机】' },
+    { id: 'phlegm', label: '【头目·痰热】' },
+    { id: 'stomach', label: '【消化·脾胃】' }
+];
+
+groupLabels.forEach(group => {
+    const syn = SYNDROME_DB.find(s => s.id === group.id);
+    if (!syn) return;
+
+    // 小标题
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'tag hint';
+    labelSpan.textContent = group.label;
+    labelSpan.style.cssText = 'width:100%;margin-top:6px;border:none;background:transparent;font-weight:700;color:#8B4513;padding:4px 0;cursor:default;';
+    tagGroup.appendChild(labelSpan);
+
+    // 该证型的症状标签
+    syn.keywords.forEach(kw => {
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.textContent = kw;
+        span.onclick = function() { this.classList.toggle('selected'); };
+        tagGroup.appendChild(span);
+    });
 });
 
 // ======================== 文本分词匹配 ========================
